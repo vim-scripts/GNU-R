@@ -1,0 +1,1469 @@
+
+R : Copyright 2005, The R Foundation for Statistical Computing
+Version 2.2.0  (2005-10-06 r35749)
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+Loading Tcl/Tk interface ... done
+[Previously saved workspace restored]
+
+> ## done:
+> # 1) data loading
+> # 2) data extraction
+> # 3) data plot && save
+> # 4) ADF tests for 3 series, based on AIC, BIC and significance criteria, in versions for constant and trend
+> # 5) ADF tests for differences in 3 series, based on AIC, BIC  and siginficance criteria, in version for constant only
+> ##
+> 
+> 
+> library("uroot")
+> 
+> 
+> #STEP 1 LOAD DATA
+> set_data<-read.csv("/home/jinxs/documents/article_duty_impact/original.csv", header = TRUE, sep = ",", quote="\"")
+> Date<-set_data[,1]
+> 
+> 
+> #STEP 2 EXTRACT DATA FROM THE FILE AND MAKE THEM TIME SERIES
+> crude<-set_data[,4]
+> super_unleaded<-set_data[,5]
+> premium_unleaded<-set_data[,6]
+> derv<-set_data[,7]
+> burining_oil<-set_data[,8]
+> 
+> tcrude<-ts(data=crude, start=c(1991,1), frequency=12)
+> tsuper_unleaded<-ts(data=super_unleaded, start=c(1991,1), frequency=12)
+> tpremium_unleaded<-ts(data=premium_unleaded, start=c(1991,1), frequency=12)
+> tderv<-ts(data=derv, start=c(1991,1), frequency=12)
+> 
+> d_tcrude<-diff(tcrude)
+> d_tsuper_unleaded<-diff(tsuper_unleaded)
+> d_tpremium_unleaded<-diff(tpremium_unleaded)
+> d_tderv<-diff(tderv)
+> 
+> 
+> #STEP 3 PLOT && SAVE THE DATA 
+> X11()
+> plot.ts(cbind(tsuper_unleaded, tpremium_unleaded, tderv), col=c("blue", "red", "green"), plot.type="single", key, xy.lines="TRUE", y=NULL, ylab="Super unleaded", xlab=NULL)
+> legend(x="topleft", cex=0.8, bty="n", lty=c(1,1,2), lwd=c(2,1,1), col=c("blue", "red", "green"), legend=c("Super unleaded", "Premium unleaded", "Derivative"))
+> dev.print(postscript, horizontal = FALSE, onefile = FALSE, pointsize=10, file="/home/jinxs/documents/article_duty_impact/y_series.eps")
+X11 
+  2 
+> 
+> 
+> #STEP 5 RUN THE STATS AND SAVE THE TABLES, formatting almost done, itsc, constant, trend, seasonal dummies
+> 
+> #############################################################################################################################################################################################################################################################################################################################################################STEP 5.1 ADF for LEVELS
+> 
+> #########################################################################################################################################################################################################################################SUPER UNLEADED
+> 
+> #STEP 5.1.1.A ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.A ADF, BIC, constant, no trend, no seasonality
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tsuper_ADF_BIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.a ADF, AIC, constant, no trend, no seasonality
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tab:tsuper_ADF_AIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.A ADF, SIGNF constant, no trend, no seasonality
+> 
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tab:tsuper_ADF_SIGNF_const", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_SIGNF_c.tex")
+NULL
+> 
+> #####################################################################################################################STEP 5.1.2 ADF, CONSTANT, TREND
+> 
+> 
+> #STEP 5.1.2.1.A ADF, BUC, constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_BIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.A ADF, AIC, constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_AIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.A ADF, SIGNF constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_SIGNF_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> ########################################################################################################################################################################################################################################
+> #PREMIUM UNLEADED
+> 
+> #STEP 5.1.1 ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.B ADF, BIC, constant, no trend, no seasonality
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tpremium_ADF_BIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.B ADF, AIC, constant, no trend, no seasonality
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tab:tpremium_ADF_AIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.B ADF, SIGNF constant, no trend, no seasonality
+> 
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tab:tpremium_ADF_SIGNF_const", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_SIGNF_c.tex")
+NULL
+> 
+> ####################################################################################################################
+> #STEP 5.1.2.b ADF, CONSTANT, TREND
+> 
+> 
+> #STEP 5.1.2.1.b ADF, BUC, constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_BIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.b ADF, AIC, constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_AIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.b ADF, SIGNF constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_SIGNF_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> ########################################################################################################################################################################################################################################
+> #TDERV
+> 
+> #STEP 5.1.1.c ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.c ADF, BIC, constant, no trend, no seasonality
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tderv_ADF_BIC_const", caption="ADF test statistcs for Derivative (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.c ADF, AIC, constant, no trend, no seasonality
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tab:tderv_ADF_AIC_const", caption="ADF test statistcs for Derivative (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.c ADF, SIGNF constant, no trend, no seasonality
+> 
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tab:tderv_ADF_SIGNF_const", caption="ADF test statistcs for Derivative (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_SIGNF_c.tex")
+NULL
+> 
+> 
+> ####################################################################################################################
+> #STEP 5.1.2 ADF, CONSTANT, TREND
+> 
+> #STEP 5.1.2.1.c ADF, BUC, constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_BIC_const_trend", caption="ADF test statistcs for Derivative (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.c ADF, AIC, constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_AIC_const_trend", caption="ADF test statistcs for Derivative (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.c ADF, SIGNF constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_SIGNF_const_trend", caption="ADF test statistcs for Derivative (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> 
+> ############################################################################################################################################################################################################################################################################################################################################################
+> 
+> 
+> #STEP 5.2 ADF for DIFFERENCES
+> 
+> #SUPER UNLEADED
+> 
+> #STEP 5.2.1.A ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.A ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="d_tsuper_ADF_BIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.a ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="tab:d_tsuper_ADF_AIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.A ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="tab:d_tsuper_ADF_SIGNF_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> ####################################################################################################################
+> 
+> #PREMIUM UNLEADED
+> 
+> #STEP 5.2.1 ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.B ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="d_tpremium_ADF_BIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.B ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="tab:d_tpremium_ADF_AIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.B ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="tab:d_tpremium_ADF_SIGNF_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> ####################################################################################################################
+> #TDERV
+> 
+> #STEP 5.2.1.c ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.c ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="d_tderv_ADF_BIC_const", caption="ADF test statistics for first differences in Derivative (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.c ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="tab:d_tderv_ADF_AIC_const", caption="ADF test statistics for first differences in Derivative (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.c ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="tab:d_tderv_ADF_SIGNF_const", caption="ADF test statistics for first differences in Derivative (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> 
+> 
+
+R : Copyright 2005, The R Foundation for Statistical Computing
+Version 2.2.0  (2005-10-06 r35749)
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+Loading Tcl/Tk interface ... done
+[Previously saved workspace restored]
+
+> ## done:
+> # 1) data loading
+> # 2) data extraction
+> # 3) data plot && save
+> # 4) ADF tests for 3 series, based on AIC, BIC and significance criteria, in versions for constant and trend
+> # 5) ADF tests for differences in 3 series, based on AIC, BIC  and siginficance criteria, in version for constant only
+> ##
+> 
+> 
+> library("uroot")
+> 
+> 
+> #STEP 1 LOAD DATA
+> set_data<-read.csv("/home/jinxs/documents/article_duty_impact/original.csv", header = TRUE, sep = ",", quote="\"")
+> Date<-set_data[,1]
+> 
+> 
+> #STEP 2 EXTRACT DATA FROM THE FILE AND MAKE THEM TIME SERIES
+> crude<-set_data[,4]
+> super_unleaded<-set_data[,5]
+> premium_unleaded<-set_data[,6]
+> derv<-set_data[,7]
+> burining_oil<-set_data[,8]
+> 
+> tcrude<-ts(data=crude, start=c(1991,1), frequency=12)
+> tsuper_unleaded<-ts(data=super_unleaded, start=c(1991,1), frequency=12)
+> tpremium_unleaded<-ts(data=premium_unleaded, start=c(1991,1), frequency=12)
+> tderv<-ts(data=derv, start=c(1991,1), frequency=12)
+> 
+> d_tcrude<-diff(tcrude)
+> d_tsuper_unleaded<-diff(tsuper_unleaded)
+> d_tpremium_unleaded<-diff(tpremium_unleaded)
+> d_tderv<-diff(tderv)
+> 
+> 
+> #STEP 3 PLOT && SAVE THE DATA 
+> X11()
+> plot.ts(cbind(tsuper_unleaded, tpremium_unleaded, tderv), col=c("blue", "red", "green"), plot.type="single", key, xy.lines="TRUE", y=NULL, ylab="Super unleaded", xlab=NULL)
+> legend(x="topleft", cex=0.8, bty="n", lty=c(1,1,2), lwd=c(2,1,1), col=c("blue", "red", "green"), legend=c("Super unleaded", "Premium unleaded", "Derivative"))
+> dev.print(postscript, horizontal = FALSE, onefile = FALSE, pointsize=10, file="/home/jinxs/documents/article_duty_impact/y_series.eps")
+X11 
+  2 
+> 
+> 
+> #STEP 5 RUN THE STATS AND SAVE THE TABLES, formatting almost done, itsc, constant, trend, seasonal dummies
+> 
+> #############################################################################################################################################################################################################################################################################################################################################################STEP 5.1 ADF for LEVELS
+> 
+> #########################################################################################################################################################################################################################################SUPER UNLEADED
+> 
+> #STEP 5.1.1.A ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.A ADF, BIC, constant, no trend, no seasonality
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tsuper_ADF_BIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.a ADF, AIC, constant, no trend, no seasonality
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tab:tsuper_ADF_AIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.A ADF, SIGNF constant, no trend, no seasonality
+> 
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tab:tsuper_ADF_SIGNF_const", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_SIGNF_c.tex")
+NULL
+> 
+> #####################################################################################################################STEP 5.1.2 ADF, CONSTANT, TREND
+> 
+> 
+> #STEP 5.1.2.1.A ADF, BUC, constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_BIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.A ADF, AIC, constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_AIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.A ADF, SIGNF constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_SIGNF_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> ########################################################################################################################################################################################################################################
+> #PREMIUM UNLEADED
+> 
+> #STEP 5.1.1 ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.B ADF, BIC, constant, no trend, no seasonality
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tpremium_ADF_BIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.B ADF, AIC, constant, no trend, no seasonality
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tab:tpremium_ADF_AIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.B ADF, SIGNF constant, no trend, no seasonality
+> 
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tab:tpremium_ADF_SIGNF_const", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_SIGNF_c.tex")
+NULL
+> 
+> ####################################################################################################################
+> #STEP 5.1.2.b ADF, CONSTANT, TREND
+> 
+> 
+> #STEP 5.1.2.1.b ADF, BUC, constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_BIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.b ADF, AIC, constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_AIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.b ADF, SIGNF constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_SIGNF_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> ########################################################################################################################################################################################################################################
+> #TDERV
+> 
+> #STEP 5.1.1.c ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.c ADF, BIC, constant, no trend, no seasonality
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tderv_ADF_BIC_const", caption="ADF test statistcs for Derivative (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.c ADF, AIC, constant, no trend, no seasonality
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tab:tderv_ADF_AIC_const", caption="ADF test statistcs for Derivative (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.c ADF, SIGNF constant, no trend, no seasonality
+> 
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tab:tderv_ADF_SIGNF_const", caption="ADF test statistcs for Derivative (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_SIGNF_c.tex")
+NULL
+> 
+> 
+> ####################################################################################################################
+> #STEP 5.1.2 ADF, CONSTANT, TREND
+> 
+> #STEP 5.1.2.1.c ADF, BUC, constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_BIC_const_trend", caption="ADF test statistcs for Derivative (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.c ADF, AIC, constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_AIC_const_trend", caption="ADF test statistcs for Derivative (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.c ADF, SIGNF constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_SIGNF_const_trend", caption="ADF test statistcs for Derivative (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> 
+> ############################################################################################################################################################################################################################################################################################################################################################
+> 
+> 
+> #STEP 5.2 ADF for DIFFERENCES
+> 
+> #SUPER UNLEADED
+> 
+> #STEP 5.2.1.A ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.A ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="d_tsuper_ADF_BIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.a ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="tab:d_tsuper_ADF_AIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.A ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="tab:d_tsuper_ADF_SIGNF_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> ####################################################################################################################
+> 
+> #PREMIUM UNLEADED
+> 
+> #STEP 5.2.1 ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.B ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="d_tpremium_ADF_BIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.B ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="tab:d_tpremium_ADF_AIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.B ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="tab:d_tpremium_ADF_SIGNF_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> ####################################################################################################################
+> #TDERV
+> 
+> #STEP 5.2.1.c ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.c ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="d_tderv_ADF_BIC_const", caption="ADF test statistics for first differences in Derivative (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.c ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="tab:d_tderv_ADF_AIC_const", caption="ADF test statistics for first differences in Derivative (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.c ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="tab:d_tderv_ADF_SIGNF_const", caption="ADF test statistics for first differences in Derivative (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> 
+> 
+
+R : Copyright 2005, The R Foundation for Statistical Computing
+Version 2.2.0  (2005-10-06 r35749)
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+Loading Tcl/Tk interface ... done
+[Previously saved workspace restored]
+
+> ## done:
+> # 1) data loading
+> # 2) data extraction
+> # 3) data plot && save
+> # 4) ADF tests for 3 series, based on AIC, BIC and significance criteria, in versions for constant and trend
+> # 5) ADF tests for differences in 3 series, based on AIC, BIC  and siginficance criteria, in version for constant only
+> ##
+> 
+> 
+> library("uroot")
+> 
+> 
+> #STEP 1 LOAD DATA
+> set_data<-read.csv("/home/jinxs/documents/article_duty_impact/original.csv", header = TRUE, sep = ",", quote="\"")
+> Date<-set_data[,1]
+> 
+> 
+> #STEP 2 EXTRACT DATA FROM THE FILE AND MAKE THEM TIME SERIES
+> crude<-set_data[,4]
+> super_unleaded<-set_data[,5]
+> premium_unleaded<-set_data[,6]
+> derv<-set_data[,7]
+> burining_oil<-set_data[,8]
+> 
+> tcrude<-ts(data=crude, start=c(1991,1), frequency=12)
+> tsuper_unleaded<-ts(data=super_unleaded, start=c(1991,1), frequency=12)
+> tpremium_unleaded<-ts(data=premium_unleaded, start=c(1991,1), frequency=12)
+> tderv<-ts(data=derv, start=c(1991,1), frequency=12)
+> 
+> d_tcrude<-diff(tcrude)
+> d_tsuper_unleaded<-diff(tsuper_unleaded)
+> d_tpremium_unleaded<-diff(tpremium_unleaded)
+> d_tderv<-diff(tderv)
+> 
+> 
+> #STEP 3 PLOT && SAVE THE DATA 
+> X11()
+> plot.ts(cbind(tsuper_unleaded, tpremium_unleaded, tderv), col=c("blue", "red", "green"), plot.type="single", key, xy.lines="TRUE", y=NULL, ylab="Super unleaded", xlab=NULL)
+> legend(x="topleft", cex=0.8, bty="n", lty=c(1,1,2), lwd=c(2,1,1), col=c("blue", "red", "green"), legend=c("Super unleaded", "Premium unleaded", "Derivative"))
+> dev.print(postscript, horizontal = FALSE, onefile = FALSE, pointsize=10, file="/home/jinxs/documents/article_duty_impact/y_series.eps")
+X11 
+  2 
+> 
+> 
+> #STEP 5 RUN THE STATS AND SAVE THE TABLES, formatting almost done, itsc, constant, trend, seasonal dummies
+> 
+> #############################################################################################################################################################################################################################################################################################################################################################STEP 5.1 ADF for LEVELS
+> 
+> #########################################################################################################################################################################################################################################SUPER UNLEADED
+> 
+> #STEP 5.1.1.A ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.A ADF, BIC, constant, no trend, no seasonality
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tsuper_ADF_BIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.a ADF, AIC, constant, no trend, no seasonality
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tab:tsuper_ADF_AIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.A ADF, SIGNF constant, no trend, no seasonality
+> 
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tab:tsuper_ADF_SIGNF_const", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_SIGNF_c.tex")
+NULL
+> 
+> #####################################################################################################################STEP 5.1.2 ADF, CONSTANT, TREND
+> 
+> 
+> #STEP 5.1.2.1.A ADF, BUC, constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_BIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.A ADF, AIC, constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_AIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.A ADF, SIGNF constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_SIGNF_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> ########################################################################################################################################################################################################################################
+> #PREMIUM UNLEADED
+> 
+> #STEP 5.1.1 ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.B ADF, BIC, constant, no trend, no seasonality
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tpremium_ADF_BIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.B ADF, AIC, constant, no trend, no seasonality
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tab:tpremium_ADF_AIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.B ADF, SIGNF constant, no trend, no seasonality
+> 
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tab:tpremium_ADF_SIGNF_const", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_SIGNF_c.tex")
+NULL
+> 
+> ####################################################################################################################
+> #STEP 5.1.2.b ADF, CONSTANT, TREND
+> 
+> 
+> #STEP 5.1.2.1.b ADF, BUC, constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_BIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.b ADF, AIC, constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_AIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.b ADF, SIGNF constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_SIGNF_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> ########################################################################################################################################################################################################################################
+> #TDERV
+> 
+> #STEP 5.1.1.c ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.c ADF, BIC, constant, no trend, no seasonality
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tderv_ADF_BIC_const", caption="ADF test statistcs for Derivative (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.c ADF, AIC, constant, no trend, no seasonality
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tab:tderv_ADF_AIC_const", caption="ADF test statistcs for Derivative (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.c ADF, SIGNF constant, no trend, no seasonality
+> 
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tab:tderv_ADF_SIGNF_const", caption="ADF test statistcs for Derivative (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_SIGNF_c.tex")
+NULL
+> 
+> 
+> ####################################################################################################################
+> #STEP 5.1.2 ADF, CONSTANT, TREND
+> 
+> #STEP 5.1.2.1.c ADF, BUC, constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_BIC_const_trend", caption="ADF test statistcs for Derivative (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.c ADF, AIC, constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_AIC_const_trend", caption="ADF test statistcs for Derivative (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.c ADF, SIGNF constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_SIGNF_const_trend", caption="ADF test statistcs for Derivative (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> 
+> ############################################################################################################################################################################################################################################################################################################################################################
+> 
+> 
+> #STEP 5.2 ADF for DIFFERENCES
+> 
+> #SUPER UNLEADED
+> 
+> #STEP 5.2.1.A ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.A ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="d_tsuper_ADF_BIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.a ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="tab:d_tsuper_ADF_AIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.A ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="tab:d_tsuper_ADF_SIGNF_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> ####################################################################################################################
+> 
+> #PREMIUM UNLEADED
+> 
+> #STEP 5.2.1 ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.B ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="d_tpremium_ADF_BIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.B ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="tab:d_tpremium_ADF_AIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.B ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="tab:d_tpremium_ADF_SIGNF_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> ####################################################################################################################
+> #TDERV
+> 
+> #STEP 5.2.1.c ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.c ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="d_tderv_ADF_BIC_const", caption="ADF test statistics for first differences in Derivative (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.c ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="tab:d_tderv_ADF_AIC_const", caption="ADF test statistics for first differences in Derivative (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.c ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="tab:d_tderv_ADF_SIGNF_const", caption="ADF test statistics for first differences in Derivative (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> 
+> 
+
+R : Copyright 2005, The R Foundation for Statistical Computing
+Version 2.2.0  (2005-10-06 r35749)
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+Loading Tcl/Tk interface ... done
+[Previously saved workspace restored]
+
+> 
+> ## done:
+> # 1) data loading
+> # 2) data extraction
+> # 3) data plot && save
+> # 4) ADF tests for 3 series, based on AIC, BIC and significance criteria, in versions for constant and trend
+> # 5) ADF tests for differences in 3 series, based on AIC, BIC  and siginficance criteria, in version for constant only
+> ##
+> 
+> 
+> library("uroot")
+>    
+> 
+> 
+> #STEP 1 LOAD DATA
+> set_data<-read.csv("/home/jinxs/documents/article_duty_impact/original.csv", header = TRUE, sep = ",", quote="\"")
+> Date<-set_data[,1]
+> 
+> 
+> #STEP 2 EXTRACT DATA FROM THE FILE AND MAKE THEM TIME SERIES
+> crude<-set_data[,4]
+> super_unleaded<-set_data[,5]
+> premium_unleaded<-set_data[,6]
+> derv<-set_data[,7]
+> burining_oil<-set_data[,8]
+> 
+> tcrude<-ts(data=crude, start=c(1991,1), frequency=12)
+> tsuper_unleaded<-ts(data=super_unleaded, start=c(1991,1), frequency=12)
+> tpremium_unleaded<-ts(data=premium_unleaded, start=c(1991,1), frequency=12)
+> tderv<-ts(data=derv, start=c(1991,1), frequency=12)
+> 
+> d_tcrude<-diff(tcrude)
+> d_tsuper_unleaded<-diff(tsuper_unleaded)
+> d_tpremium_unleaded<-diff(tpremium_unleaded)
+> d_tderv<-diff(tderv)
+> 
+> 
+> #STEP 3 PLOT && SAVE THE DATA 
+> X11()
+> plot.ts(cbind(tsuper_unleaded, tpremium_unleaded, tderv), col=c("blue", "red", "green"), plot.type="single", key, xy.lines="TRUE", y=NULL, ylab="Super unleaded", xlab=NULL)
+> legend(x="topleft", cex=0.8, bty="n", lty=c(1,1,2), lwd=c(2,1,1), col=c("blue", "red", "green"), legend=c("Super unleaded", "Premium unleaded", "Derivative"))
+> dev.print(postscript, horizontal = FALSE, onefile = FALSE, pointsize=10, file="/home/jinxs/documents/article_duty_impact/y_series.eps")
+X11 
+  2 
+> 
+> 
+> #STEP 5 RUN THE STATS AND SAVE THE TABLES, formatting almost done, itsc, constant, trend, seasonal dummies
+> 
+> #############################################################################################################################################################################################################################################################################################################################################################STEP 5.1 ADF for LEVELS
+> 
+> #########################################################################################################################################################################################################################################SUPER UNLEADED
+> 
+> #STEP 5.1.1.A ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.A ADF, BIC, constant, no trend, no seasonality
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tsuper_ADF_BIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.a ADF, AIC, constant, no trend, no seasonality
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tab:tsuper_ADF_AIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.A ADF, SIGNF constant, no trend, no seasonality
+> 
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tab:tsuper_ADF_SIGNF_const", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_SIGNF_c.tex")
+NULL
+> 
+> #####################################################################################################################STEP 5.1.2 ADF, CONSTANT, TREND
+> 
+> 
+> #STEP 5.1.2.1.A ADF, BUC, constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_BIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.A ADF, AIC, constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_AIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.A ADF, SIGNF constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_SIGNF_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> ########################################################################################################################################################################################################################################
+> #PREMIUM UNLEADED
+> 
+> #STEP 5.1.1 ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.B ADF, BIC, constant, no trend, no seasonality
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tpremium_ADF_BIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.B ADF, AIC, constant, no trend, no seasonality
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tab:tpremium_ADF_AIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.B ADF, SIGNF constant, no trend, no seasonality
+> 
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tab:tpremium_ADF_SIGNF_const", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_SIGNF_c.tex")
+NULL
+> 
+> ####################################################################################################################
+> #STEP 5.1.2.b ADF, CONSTANT, TREND
+> 
+> 
+> #STEP 5.1.2.1.b ADF, BUC, constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_BIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.b ADF, AIC, constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_AIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.b ADF, SIGNF constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_SIGNF_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> ########################################################################################################################################################################################################################################
+> #TDERV
+> 
+> #STEP 5.1.1.c ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.c ADF, BIC, constant, no trend, no seasonality
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tderv_ADF_BIC_const", caption="ADF test statistcs for Derivative (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.c ADF, AIC, constant, no trend, no seasonality
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tab:tderv_ADF_AIC_const", caption="ADF test statistcs for Derivative (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.c ADF, SIGNF constant, no trend, no seasonality
+> 
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tab:tderv_ADF_SIGNF_const", caption="ADF test statistcs for Derivative (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_SIGNF_c.tex")
+NULL
+> 
+> 
+> ####################################################################################################################
+> #STEP 5.1.2 ADF, CONSTANT, TREND
+> 
+> #STEP 5.1.2.1.c ADF, BUC, constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_BIC_const_trend", caption="ADF test statistcs for Derivative (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.c ADF, AIC, constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_AIC_const_trend", caption="ADF test statistcs for Derivative (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.c ADF, SIGNF constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_SIGNF_const_trend", caption="ADF test statistcs for Derivative (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> 
+> ############################################################################################################################################################################################################################################################################################################################################################
+> 
+> 
+> #STEP 5.2 ADF for DIFFERENCES
+> 
+> #SUPER UNLEADED
+> 
+> #STEP 5.2.1.A ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.A ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="d_tsuper_ADF_BIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.a ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="tab:d_tsuper_ADF_AIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.A ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="tab:d_tsuper_ADF_SIGNF_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> ####################################################################################################################
+> 
+> #PREMIUM UNLEADED
+> 
+> #STEP 5.2.1 ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.B ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="d_tpremium_ADF_BIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.B ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="tab:d_tpremium_ADF_AIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.B ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="tab:d_tpremium_ADF_SIGNF_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> ####################################################################################################################
+> #TDERV
+> 
+> #STEP 5.2.1.c ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.c ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="d_tderv_ADF_BIC_const", caption="ADF test statistics for first differences in Derivative (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.c ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="tab:d_tderv_ADF_AIC_const", caption="ADF test statistics for first differences in Derivative (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.c ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="tab:d_tderv_ADF_SIGNF_const", caption="ADF test statistics for first differences in Derivative (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> 
+> 
+
+R : Copyright 2005, The R Foundation for Statistical Computing
+Version 2.2.0  (2005-10-06 r35749)
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+Loading Tcl/Tk interface ... done
+[Previously saved workspace restored]
+
+> 
+> ## done:
+> # 1) data loading
+> # 2) data extraction
+> # 3) data plot && save
+> # 4) ADF tests for 3 series, based on AIC, BIC and significance criteria, in versions for constant and trend
+> # 5) ADF tests for differences in 3 series, based on AIC, BIC  and siginficance criteria, in version for constant only
+> ##
+> 
+> 
+> library("uroot")
+>    
+> 
+> 
+> #STEP 1 LOAD DATA
+> set_data<-read.csv("/home/jinxs/documents/article_duty_impact/original.csv", header = TRUE, sep = ",", quote="\"")
+> Date<-set_data[,1]
+> 
+> 
+> #STEP 2 EXTRACT DATA FROM THE FILE AND MAKE THEM TIME SERIES
+> crude<-set_data[,4]
+> super_unleaded<-set_data[,5]
+> premium_unleaded<-set_data[,6]
+> derv<-set_data[,7]
+> burining_oil<-set_data[,8]
+> 
+> tcrude<-ts(data=crude, start=c(1991,1), frequency=12)
+> tsuper_unleaded<-ts(data=super_unleaded, start=c(1991,1), frequency=12)
+> tpremium_unleaded<-ts(data=premium_unleaded, start=c(1991,1), frequency=12)
+> tderv<-ts(data=derv, start=c(1991,1), frequency=12)
+> 
+> d_tcrude<-diff(tcrude)
+> d_tsuper_unleaded<-diff(tsuper_unleaded)
+> d_tpremium_unleaded<-diff(tpremium_unleaded)
+> d_tderv<-diff(tderv)
+> 
+> 
+> #STEP 3 PLOT && SAVE THE DATA 
+> X11()
+> plot.ts(cbind(tsuper_unleaded, tpremium_unleaded, tderv), col=c("blue", "red", "green"), plot.type="single", key, xy.lines="TRUE", y=NULL, ylab="Super unleaded", xlab=NULL)
+> legend(x="topleft", cex=0.8, bty="n", lty=c(1,1,2), lwd=c(2,1,1), col=c("blue", "red", "green"), legend=c("Super unleaded", "Premium unleaded", "Derivative"))
+> dev.print(postscript, horizontal = FALSE, onefile = FALSE, pointsize=10, file="/home/jinxs/documents/article_duty_impact/y_series.eps")
+X11 
+  2 
+> 
+> 
+> #STEP 5 RUN THE STATS AND SAVE THE TABLES, formatting almost done, itsc, constant, trend, seasonal dummies
+> 
+> #############################################################################################################################################################################################################################################################################################################################################################STEP 5.1 ADF for LEVELS
+> 
+> #########################################################################################################################################################################################################################################SUPER UNLEADED
+> 
+> #STEP 5.1.1.A ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.A ADF, BIC, constant, no trend, no seasonality
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tsuper_ADF_BIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.a ADF, AIC, constant, no trend, no seasonality
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tab:tsuper_ADF_AIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.A ADF, SIGNF constant, no trend, no seasonality
+> 
+> tsuper_unleaded_adfstat_c=ADF.test(wts=tsuper_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_c, label="tab:tsuper_ADF_SIGNF_const", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_SIGNF_c.tex")
+NULL
+> 
+> #####################################################################################################################STEP 5.1.2 ADF, CONSTANT, TREND
+> 
+> 
+> #STEP 5.1.2.1.A ADF, BUC, constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_BIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.A ADF, AIC, constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_AIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.A ADF, SIGNF constant, trend, no seasonality
+> tsuper_unleaded_adfstat_ct=ADF.test(wts=tsuper_unleaded, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tsuper_unleaded_adfstat_ct, label="tab:tsuper_ADF_SIGNF_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tsuper_unleaded_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> ########################################################################################################################################################################################################################################
+> #PREMIUM UNLEADED
+> 
+> #STEP 5.1.1 ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.B ADF, BIC, constant, no trend, no seasonality
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tpremium_ADF_BIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.B ADF, AIC, constant, no trend, no seasonality
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tab:tpremium_ADF_AIC_const", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.B ADF, SIGNF constant, no trend, no seasonality
+> 
+> tpremium_unleaded_adfstat_c=ADF.test(wts=tpremium_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_c, label="tab:tpremium_ADF_SIGNF_const", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_SIGNF_c.tex")
+NULL
+> 
+> ####################################################################################################################
+> #STEP 5.1.2.b ADF, CONSTANT, TREND
+> 
+> 
+> #STEP 5.1.2.1.b ADF, BUC, constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_BIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.b ADF, AIC, constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_AIC_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.b ADF, SIGNF constant, trend, no seasonality
+> tpremium_unleaded_adfstat_ct=ADF.test(wts=tpremium_unleaded, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tpremium_unleaded_adfstat_ct, label="tab:tpremium_ADF_SIGNF_const_trend", caption="ADF test statistcs for Super Unleaded Petrol (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tpremium_unleaded_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> ########################################################################################################################################################################################################################################
+> #TDERV
+> 
+> #STEP 5.1.1.c ADF, CONSTANT NO TREND
+> 
+> #STEP 5.1.1.1.c ADF, BIC, constant, no trend, no seasonality
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tderv_ADF_BIC_const", caption="ADF test statistcs for Derivative (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_bic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.2.c ADF, AIC, constant, no trend, no seasonality
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tab:tderv_ADF_AIC_const", caption="ADF test statistcs for Derivative (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_aic_c.tex")
+NULL
+> 
+> 
+> #STEP 5.1.1.3.c ADF, SIGNF constant, no trend, no seasonality
+> 
+> tderv_adfstat_c=ADF.test(wts=tderv, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_c, label="tab:tderv_ADF_SIGNF_const", caption="ADF test statistcs for Derivative (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_SIGNF_c.tex")
+NULL
+> 
+> 
+> ####################################################################################################################
+> #STEP 5.1.2 ADF, CONSTANT, TREND
+> 
+> #STEP 5.1.2.1.c ADF, BUC, constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_BIC_const_trend", caption="ADF test statistcs for Derivative (lags set to BIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_bic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.2.c ADF, AIC, constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_AIC_const_trend", caption="ADF test statistcs for Derivative (lags set to AIC, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_aic_ct.tex")
+NULL
+> 
+> 
+> #STEP 5.1.2.3.c ADF, SIGNF constant, trend, no seasonality
+> tderv_adfstat_ct=ADF.test(wts=tderv, itsd=c(1,1,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(tderv_adfstat_ct, label="tab:tderv_ADF_SIGNF_const_trend", caption="ADF test statistcs for Derivative (significant lags, constant and trend)"), file="/home/jinxs/documents/article_duty_impact/tderv_adfstat_SIGNF_ct.tex")
+NULL
+> 
+> 
+> ############################################################################################################################################################################################################################################################################################################################################################
+> 
+> 
+> #STEP 5.2 ADF for DIFFERENCES
+> 
+> #SUPER UNLEADED
+> 
+> #STEP 5.2.1.A ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.A ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="d_tsuper_ADF_BIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.a ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="tab:d_tsuper_ADF_AIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.A ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tsuper_unleaded_adfstat_c=ADF.test(wts=d_tsuper_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tsuper_unleaded_adfstat_c, label="tab:d_tsuper_ADF_SIGNF_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tsuper_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> ####################################################################################################################
+> 
+> #PREMIUM UNLEADED
+> 
+> #STEP 5.2.1 ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.B ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="d_tpremium_ADF_BIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.B ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="tab:d_tpremium_ADF_AIC_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.B ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tpremium_unleaded_adfstat_c=ADF.test(wts=d_tpremium_unleaded, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tpremium_unleaded_adfstat_c, label="tab:d_tpremium_ADF_SIGNF_const", caption="ADF test statistics for first differences in Super Unleaded Petrol (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tpremium_unleaded_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> ####################################################################################################################
+> #TDERV
+> 
+> #STEP 5.2.1.c ADF FOR DIFFERENCES, CONSTANT NO TREND
+> 
+> #STEP 5.2.1.1.c ADF FOR DIFFERENCES, BIC, constant, no trend, no seasonality
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0), selectlags=list(mode="bic", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="d_tderv_ADF_BIC_const", caption="ADF test statistics for first differences in Derivative (lags set to BIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=FALSE)
+NULL
+> 
+> 
+> #STEP 5.2.1.2.c ADF FOR DIFFERENCES, AIC, constant, no trend, no seasonality
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0), selectlags=list(mode="aic", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="tab:d_tderv_ADF_AIC_const", caption="ADF test statistics for first differences in Derivative (lags set to AIC, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> #STEP 5.2.1.3.c ADF FOR DIFFERENCES, SIGNF constant, no trend, no seasonality
+> 
+> d_tderv_adfstat_c=ADF.test(wts=d_tderv, itsd=c(1,0,0),  selectlags=list(mode="signf", Pmax=12))
+> capture.output(urt.xtable(d_tderv_adfstat_c, label="tab:d_tderv_ADF_SIGNF_const", caption="ADF test statistics for first differences in Derivative (significant lags, constant only)"), file="/home/jinxs/documents/article_duty_impact/d_tderv_adfstat_c_DELETEME.tex", append=TRUE)
+NULL
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> ###############END END END END ################END END END END ##############END END END END ###################END 
+> 
+> 

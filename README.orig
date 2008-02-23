@@ -1,0 +1,31 @@
+YASoVFFR (yet another set of Vim files for R)
+Simon Wlazlowski jinxs_NOSPAM_AT_NOSPAM_.wp.pl
+
+A. What it does:
+press F4 to process R files, press F5 to see the results saved in separate file ROutPut)
+
+B. Install:
+simply copy the files from archive as follows:
+
+1) .vimrc goes to ~/
+2) RVim.bat goes to ~/.vim/ REMEMBER to make it executable (chmod +x FILE)
+3) myfiletypes.vim goes to ~/.vim
+4) myfunctions.vim goes to ~/.vim
+5) r.vim goes to /usr/share/vim/**CURRENT VERSION**/syntax/
+6) vimSwap (and ROutput inside) goes to ~/
+7) gpl.txt is for you to read.
+
+C. Licensing
+This is released under GNU, copy attached.
+
+D. Acknowledgements
+
+Those files were inspired, and share some code with VimFiles for Ox by Vincent Nijs (originally posted http://www.jiscmail.ac.uk/cgi-bin/webadmin?A2=ind0112&amp;L=ox-users&amp;T=0&amp;F=&amp;S=&amp;P=900)
+
+Vim is a nice software, read about it and support the orphants.
+
+Cheers,
+
+Si
+
+
